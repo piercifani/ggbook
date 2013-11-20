@@ -7,7 +7,7 @@
 //
 
 #import "GGDetailViewController.h"
-
+#import "UIImageView+WebCache.h"
 #import "GGBookFetcher.h"
 #import "Book.h"
 
@@ -40,6 +40,9 @@
     self.authorLabel.text = [NSString stringWithFormat:@"Author: %@", _detailBook.author];
     self.priceLabel.text = [NSString stringWithFormat:@"Price: %@", [_detailBook.price stringValue]];
     
+    NSURL *url = [NSURL URLWithString:_detailBook.imagePath];
+    
+    [self.coverImage setImageWithURL:url];
 }
 
 - (void)didReceiveMemoryWarning

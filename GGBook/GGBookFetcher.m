@@ -49,14 +49,20 @@
 
 - (void) getBooks
 {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     [[GGAPIEngine sharedInstance] getBooks:^(id response){
         
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
         [self processBooksResponse:response];
     }];
 }
 
 - (void) fetchDetailsForBook:(Book *)book completion:(void (^)(BOOL))block;
 {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+
     [[GGAPIEngine sharedInstance] getDetailsForBookInPath:book.detailsPath
                                                completion:^(id result) {
                                                    
@@ -68,6 +74,8 @@
                                                    [self processDetails:result
                                                           forBookWithID:book.iID
                                                          userCompletion:block];
+                                                   
+                                                   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
                                                }];
 
 }
