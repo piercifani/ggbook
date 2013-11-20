@@ -18,9 +18,11 @@ typedef void(^GGBackgroundCoreDataBlock)(NSManagedObjectContext *);
 
 - (NSManagedObjectContext *) defaultContext;
 
-- (NSFetchedResultsController *) fetchBooks;
+- (NSFetchedResultsController *) booksFRC;
 - (NSArray *) bookWithID:(NSString *)bookID context:(NSManagedObjectContext *)context;
 
 - (void) performBackgroundCoreDataOperation:(GGBackgroundCoreDataBlock)operationBlock;
+- (void) performBackgroundCoreDataOperation:(GGBackgroundCoreDataBlock)operationBlock
+                                 completion:(void (^)(NSError *))block;
 
 @end

@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+@class Book;
+
 @interface GGDetailViewController : UIViewController
 
-@property (strong, nonatomic) id detailItem;
+@property (strong, nonatomic) Book *detailBook;
 
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
+@property (strong, nonatomic) IBOutlet UILabel *authorLabel;
+@property (strong, nonatomic) IBOutlet UILabel *priceLabel;
 @end

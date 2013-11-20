@@ -83,8 +83,8 @@
     }
 }
 
-- (void)updateMainContext:(NSNotification *)notification {
-    
+- (void)updateMainContext:(NSNotification *)notification
+{
     assert([NSThread isMainThread]);
     [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
 }
@@ -96,20 +96,19 @@
     return @"Book";
 }
 
-- (NSFetchedResultsController *) fetchBooks;
+- (NSFetchedResultsController *) booksFRC;
 {
     NSManagedObjectContext *moc = [self defaultContext];
     
-    NSEntityDescription *entityDescription = [NSEntityDescription
-                                              entityForName:[self bookEntity]
-                                              inManagedObjectContext:moc];
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:[self bookEntity]
+                                                         inManagedObjectContext:moc];
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:entityDescription];
     
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc]
-                                        initWithKey:@"iID" ascending:NO];
-    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"iID"
+                                                                   ascending:NO];
+
     [request setSortDescriptors:@[sortDescriptor]];
     
     NSFetchedResultsController *fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:moc sectionNameKeyPath:nil cacheName:@"root"];
@@ -129,8 +128,7 @@
 {
     if (context == nil) context = self.managedObjectContext;
     
-    NSEntityDescription *entityDescription = [NSEntityDescription
-                                              entityForName:[self bookEntity]
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:[self bookEntity]
                                               inManagedObjectContext:context];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:entityDescription];
@@ -152,7 +150,31 @@
 
 }
 
-- (void) performBackgroundCoreDataOperation:(GGBackgroundCoreDataBlock)operationBlock;
+- (NSArray *) allBooks;
+{
+    NSManagedObjectContext *context = self.managedObjectContext;
+    
+    NSEntityDescription *entityDescription = [NSEntityDescription
+                                              entityForName:[self bookEntity]
+                                              inManagedObjectContext:context];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:entityDescription];
+    
+    NSError *error = nil;
+    NSArray *results = [context executeFetchRequest:request error:&error];
+    
+    if (error)
+    {
+        NSLog(@"Error Fetching %@", error);
+        return nil;
+    }
+    
+    return results;
+    
+}
+
+- (void) performBackgroundCoreDataOperation:(GGBackgroundCoreDataBlock)operationBlock
+                                 completion:(void (^)(NSError *))block;
 {
     NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
         
@@ -161,7 +183,7 @@
         
         //Execute Background operation
         operationBlock(backgroundMOC);
-
+        
         //Save
         NSError *error;
         [backgroundMOC save:&error];
@@ -169,9 +191,21 @@
         if (error) {
             NSLog(@"Some error happened saving"); //Maybe we should handle this in a better way
         }
+        
+        if (block)
+        {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                block(error);
+            }];
+        }
     }];
     
     [self.backgroundOperationQueue addOperation:blockOperation];
+}
+
+- (void) performBackgroundCoreDataOperation:(GGBackgroundCoreDataBlock)operationBlock;
+{
+    [self performBackgroundCoreDataOperation:operationBlock completion:nil];
 }
 
 #pragma mark - Core Data stack

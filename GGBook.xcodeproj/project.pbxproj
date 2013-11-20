@@ -173,9 +173,9 @@
 				EBB62D1A183D14A500A8D1BD /* Images.xcassets */,
 				EBB62D41183D18CB00A8D1BD /* GGBookFetcher.h */,
 				EBB62D42183D18CB00A8D1BD /* GGBookFetcher.m */,
-				EBB62D48183D1B8400A8D1BD /* Vendor */,
 				EBB62D44183D18D500A8D1BD /* Network */,
 				EBB62D3B183D150D00A8D1BD /* CoreData */,
+				EBB62D48183D1B8400A8D1BD /* Vendor */,
 				EBB62D03183D14A500A8D1BD /* Supporting Files */,
 			);
 			path = GGBook;

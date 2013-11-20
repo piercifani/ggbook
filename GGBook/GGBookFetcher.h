@@ -8,9 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+@class Book;
+
 @interface GGBookFetcher : NSObject
 
 + (instancetype) sharedInstance;
-- (NSFetchedResultsController *) fetchBooks;
+
+- (NSFetchedResultsController *) booksFRC;
+- (void) fetchDetailsForBook:(Book *)book completion:(void (^)(BOOL))block;
 
 @end

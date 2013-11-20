@@ -59,8 +59,8 @@
 {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        [[segue destinationViewController] setDetailItem:object];
+        Book *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+        [[segue destinationViewController] setDetailBook:object];
     }
 }
 
@@ -72,7 +72,8 @@
         return _fetchedResultsController;
     }
     
-    _fetchedResultsController = [[GGBookFetcher sharedInstance] fetchBooks];
+    _fetchedResultsController = [[GGBookFetcher sharedInstance] booksFRC];
+    [_fetchedResultsController setDelegate:self];
     
     return _fetchedResultsController;
 }    
@@ -82,8 +83,10 @@
     [self.tableView beginUpdates];
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
-           atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type
+- (void)controller:(NSFetchedResultsController *)controller
+  didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
+           atIndex:(NSUInteger)sectionIndex
+     forChangeType:(NSFetchedResultsChangeType)type
 {
     switch(type) {
         case NSFetchedResultsChangeInsert:
@@ -96,8 +99,10 @@
     }
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject
-       atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type
+- (void)controller:(NSFetchedResultsController *)controller
+   didChangeObject:(id)anObject
+       atIndexPath:(NSIndexPath *)indexPath
+     forChangeType:(NSFetchedResultsChangeType)type
       newIndexPath:(NSIndexPath *)newIndexPath
 {
     UITableView *tableView = self.tableView;

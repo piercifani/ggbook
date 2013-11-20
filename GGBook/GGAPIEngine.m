@@ -57,4 +57,18 @@
                      }];
 }
 
+- (void) getDetailsForBookInPath:(NSString *)path
+                      completion:(void (^)(id))block;
+{
+    [self.sessionManager GET:path
+                  parameters:[NSDictionary dictionary]
+                     success:^(NSURLSessionDataTask *task, id responseObject){
+                         block(responseObject);
+                     }
+                     failure:^(NSURLSessionDataTask *task, NSError *error){
+                         NSLog(@"Error! %@", error);
+                         block(nil);
+                     }];
+}
+
 @end

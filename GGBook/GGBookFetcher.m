@@ -42,9 +42,9 @@
     return self;
 }
 
-- (NSFetchedResultsController *) fetchBooks;
+- (NSFetchedResultsController *) booksFRC;
 {
-    return [[GGCoreDataStack sharedInstance] fetchBooks];
+    return [[GGCoreDataStack sharedInstance] booksFRC];
 }
 
 - (void) getBooks
@@ -53,6 +53,23 @@
         
         [self processBooksResponse:response];
     }];
+}
+
+- (void) fetchDetailsForBook:(Book *)book completion:(void (^)(BOOL))block;
+{
+    [[GGAPIEngine sharedInstance] getDetailsForBookInPath:book.detailsPath
+                                               completion:^(id result) {
+                                                   
+                                                   if (result == nil)
+                                                   {
+                                                       block(NO);
+                                                   }
+                                                   
+                                                   [self processDetails:result
+                                                          forBookWithID:book.iID
+                                                         userCompletion:block];
+                                               }];
+
 }
 
 - (void) processBooksResponse:(NSArray *)response
@@ -64,6 +81,34 @@
             [self processBook:book inContext:backgroundMOC];
         }
     }];
+}
+
+- (void) processDetails:(NSDictionary *)details
+          forBookWithID:(NSString *)bookID
+         userCompletion:(void (^)(BOOL))block
+{
+    GGCoreDataStack *stack = [GGCoreDataStack sharedInstance];
+    [stack performBackgroundCoreDataOperation:^(NSManagedObjectContext *backgroundMOC){
+        
+        NSArray *array = [[GGCoreDataStack sharedInstance] bookWithID:bookID context:backgroundMOC];
+        if ([array count])
+        {
+            Book *book = [array firstObject];
+            book.author = details[@"author"];
+            book.price = details[@"price"];
+            book.imagePath = details[@"image"];
+        }
+    }
+                                   completion:^(NSError *error) {
+                                       if (error)
+                                       {
+                                           block(NO);
+                                       }
+                                       else
+                                       {
+                                           block(YES);
+                                       }
+                                   }];
 }
 
 - (void) processBook:(NSDictionary *)book inContext:(NSManagedObjectContext *)context

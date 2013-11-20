@@ -8,38 +8,38 @@
 
 #import "GGDetailViewController.h"
 
+#import "GGBookFetcher.h"
+#import "Book.h"
+
 @interface GGDetailViewController ()
-- (void)configureView;
+
 @end
 
 @implementation GGDetailViewController
 
 #pragma mark - Managing the detail item
 
-- (void)setDetailItem:(id)newDetailItem
-{
-    if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
-        
-        // Update the view.
-        [self configureView];
-    }
-}
-
-- (void)configureView
-{
-    // Update the user interface for the detail item.
-
-    if (self.detailItem) {
-        self.detailDescriptionLabel.text = [[self.detailItem valueForKey:@"timeStamp"] description];
-    }
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+
     [self configureView];
+    
+    __weak __typeof(self) weakSelf = self;
+    
+    [[GGBookFetcher sharedInstance] fetchDetailsForBook:_detailBook
+                                             completion:^(BOOL success) {
+                                                 [weakSelf configureView];
+                                             }];
+}
+
+- (void) configureView
+{
+    self.title = _detailBook.title;
+    self.authorLabel.text = [NSString stringWithFormat:@"Author: %@", _detailBook.author];
+    self.priceLabel.text = [NSString stringWithFormat:@"Price: %@", [_detailBook.price stringValue]];
+    
 }
 
 - (void)didReceiveMemoryWarning

@@ -13,5 +13,6 @@
 + (instancetype) sharedInstance;
 
 - (void) getBooks:(void (^)(id))block;
+- (void) getDetailsForBookInPath:(NSString *)path completion:(void (^)(id))block;
 
 @end
